@@ -1,0 +1,101 @@
+extends layout
+
+script.
+	$(function () {
+		var columnWidths = new Array();
+
+		// Get column widths
+		$("#headerRow").find('td').each(function (index) {
+			columnWidths[index] = $(this).width();
+		});
+
+		// get column data for header
+		var tableHeaderRow = $("#headerRow").html();
+
+		// clear header
+		$("#headerRow").html("");
+		// insert header data into new table container
+		$("#newTableHeader").html(tableHeaderRow);
+
+		// modify column width for header
+		$("#newTableHeader").find('td').each(function (index) {
+			$(this).css("width", columnWidths[index]);
+		});
+
+		// modify column width for 
+		// go to the next row, first row considered header column
+		$("#targetTable tr:first").next().find('td').each(function (index) {
+			$(this).css("width", columnWidths[index]);
+		});
+	});
+
+block content
+	h1 Justin's LoL Stats App
+	p Search for a summoner name: 
+	form#formSearchSummoner(name="searchsummoner",method="get",action="/searchsummoner")
+		input#inputSummonerName(type="text", name="summonername")
+		button#btnSubmit(type="submit") Search
+		
+	if error_message
+		p= error_message
+	
+	if matches
+		h2= summoner_name + "'s Match History"
+		div(id="container")
+			table(id="matchHistoryTable")
+				tr(id="headerRow")
+					th Match Id
+					th Match Time
+					th Champion
+					th Role
+					th Lane
+					th Queue
+					th Season
+				for match in matches
+						tr
+							td
+								a(href="/getmatch?matchId=" + match.matchId)= match.matchId
+							td= match.timestamp
+							td= match.champion
+							td= match.role
+							td= match.lane
+							td= match.queue
+							td= match.season
+							
+	if match_found
+		h2= ('Match ' + match_id)
+		div
+			table
+				tr(id="blueTeamHeader")
+					th Summoner
+					th Champion
+					th Level
+					th K
+					th D
+					th A
+				for summoner in blue_team
+						tr
+							td= summoner.summonerName
+							td= summoner.championId
+							td= summoner.stats.champLevel
+							td= summoner.stats.kills
+							td= summoner.stats.deaths
+							td= summoner.stats.assists
+		div
+			table
+				tr(id="redTeamHeader")
+					th Summoner
+					th Champion
+					th Level
+					th K
+					th D
+					th A
+				for summoner in red_team
+						tr
+							td= summoner.summonerName
+							td= summoner.championId
+							td= summoner.stats.champLevel
+							td= summoner.stats.kills
+							td= summoner.stats.deaths
+							td= summoner.stats.assists
+	
