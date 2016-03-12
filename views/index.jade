@@ -42,10 +42,11 @@ block content
 	if matches
 		h2= summoner_name + "'s Match History"
 		div(id="container")
-			table(id="matchHistoryTable")
-				tr(id="headerRow")
+			table
+				tr
 					th Match Id
 					th Match Time
+					// TODO: show champion name
 					th Champion
 					th Role
 					th Lane

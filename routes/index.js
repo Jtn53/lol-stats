@@ -19,56 +19,73 @@ router.get('/searchsummoner*', function(req, res) {
     // Set our internal DB variable
     var db = req.db;
 
-    // Get our form values. These rely on the "name" attributes
+    // Get the summonername from the submitted form
     var summonerName = req.query.summonername;
+	
 	var getSummonerIdResponse;
 	var getMatchesResponse;
 	var summonerId;
 	var matches;
 	
-	// Call LoL API to get the summoner's ID 
+	// Get the summoner's summoner ID to be used to find their match history
 	request({
 		url: api_url + api_summoner_url + summonerName,
 		method: 'GET',
 		qs: {'api_key': api_key }
-	}, function (error, response, body){
+	}, function processSummonerCallResponse(error, response, body){
 		if (!error && response.statusCode == 200) 
 		{ 
 			getSummonerIdResponse = JSON.parse(body);
 			summonerId = getSummonerIdResponse[summonerName].id;
+			console.log(summonerName + " has summoner id: " + summonerId);
 			
-			// Call LoL API to get the summoner's match history
+			// Use the summoner's ID to get their match history
 			request({
 				url: api_url + api_matchlist_url + summonerId,
 				method: 'GET',
 				qs: {'api_key': api_key }
-			}, function (error, response, body){
+			}, function processMatchHistoryCallResponse (error, response, body){
 				if (!error && response.statusCode == 200) 
 				{ 
 					getMatchesResponse = JSON.parse(body);
-					matches = getMatchesResponse['matches'];
 					
-					matches.forEach(function(match){
-						match.timestamp = new Date(match.timestamp);
-					});
-					
-					res.render('index', { 
-						summoner_name : summonerName,
-						matches : matches
-					});
-					
+					// Grab all the matches and convert the timestamp to Date and championIds to champion names
+					if (getMatchesResponse['totalGames'] != 0)
+					{
+						matches = getMatchesResponse["matches"];
+						matches.forEach(function(match){
+							match.timestamp = new Date(match.timestamp);
+							// query db to match champion with championId
+							var collection = db.get("champions");
+							collection.findOne( {id: match.champion}, {}, function(error, championData) {
+								console.log(championData.name);
+								match.champion = championData.name;
+							});
+						});
+						// Happy case scenario: return the summoner name and the match list
+						console.log("go back to index!!");
+						res.render('index', { 
+							summoner_name : summonerName,
+							matches : matches
+						});
+					}
+					else
+					{
+						// Match history found, but no games have been played
+						res.render('index', { error_message : summonerName + " has not played any matches!" });
+					}
 				}
 				else 
 				{ 
-					console.log(error);
-					res.render('index', { error_message : "Could not find match history" });
+					// Match history not found
+					res.render('index', { error_message : "Could not find match history for " + summonerName});
 				}
 			});
 		}
 		else 
 		{ 
-			console.log(error);
-			res.render('index', { error_message : "Could not find summoner" });
+			// Could not find summoner
+			res.render('index', { error_message : "Could not find " + summonerName});
 		}
 	});
 });
