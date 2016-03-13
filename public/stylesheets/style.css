@@ -1,5 +1,5 @@
 body {
-  padding: 50px;
+  padding-left: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -36,10 +36,19 @@ td {
 }
 
 #redTeamHeader th {
-	background-color: #e62e00;
+	background-color: #ff4d4d;
 }
 
-#container {
-	overflow-y: scroll; 
-	height: 450px;
+#search {
+	height: 100px;
+}
+
+#content {
+	position:absolute;
+    top: 140px;
+	left:0px;
+	right:0px;
+    bottom:0px;
+	padding-left: 60px;
+    overflow-y:scroll;  
 }

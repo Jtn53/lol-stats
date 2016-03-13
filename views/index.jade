@@ -1,102 +1,81 @@
 extends layout
 
-script.
-	$(function () {
-		var columnWidths = new Array();
-
-		// Get column widths
-		$("#headerRow").find('td').each(function (index) {
-			columnWidths[index] = $(this).width();
-		});
-
-		// get column data for header
-		var tableHeaderRow = $("#headerRow").html();
-
-		// clear header
-		$("#headerRow").html("");
-		// insert header data into new table container
-		$("#newTableHeader").html(tableHeaderRow);
-
-		// modify column width for header
-		$("#newTableHeader").find('td').each(function (index) {
-			$(this).css("width", columnWidths[index]);
-		});
-
-		// modify column width for 
-		// go to the next row, first row considered header column
-		$("#targetTable tr:first").next().find('td').each(function (index) {
-			$(this).css("width", columnWidths[index]);
-		});
-	});
-
 block content
-	h1 Justin's LoL Stats App
-	p Search for a summoner name: 
-	form#formSearchSummoner(name="searchsummoner",method="get",action="/searchsummoner")
-		input#inputSummonerName(type="text", name="summonername")
-		button#btnSubmit(type="submit") Search
+	div(id="search")
+		h1 Justin's LoL Stats App
+		p Search for a summoner name: 
+		form#formSearchSummoner(name="searchsummoner",method="get",action="/searchsummoner")
+			input#inputSummonerName(type="text", name="summonername")
+			button#btnSubmit(type="submit") Search
+	
+	div(id="content")
+		if error_message
+			p= error_message
 		
-	if error_message
-		p= error_message
-	
-	if matches
-		h2= summoner_name + "'s Match History"
-		div(id="container")
-			table
-				tr
-					th Match Id
-					th Match Time
-					// TODO: show champion name
-					th Champion
-					th Role
-					th Lane
-					th Queue
-					th Season
-				for match in matches
-						tr
-							td
-								a(href="/getmatch?matchId=" + match.matchId)= match.matchId
-							td= match.timestamp
-							td= match.champion
-							td= match.role
-							td= match.lane
-							td= match.queue
-							td= match.season
-							
-	if match_found
-		h2= ('Match ' + match_id)
-		div
-			table
-				tr(id="blueTeamHeader")
-					th Summoner
-					th Champion
-					th Level
-					th K
-					th D
-					th A
-				for summoner in blue_team
-						tr
-							td= summoner.summonerName
-							td= summoner.championId
-							td= summoner.stats.champLevel
-							td= summoner.stats.kills
-							td= summoner.stats.deaths
-							td= summoner.stats.assists
-		div
-			table
-				tr(id="redTeamHeader")
-					th Summoner
-					th Champion
-					th Level
-					th K
-					th D
-					th A
-				for summoner in red_team
-						tr
-							td= summoner.summonerName
-							td= summoner.championId
-							td= summoner.stats.champLevel
-							td= summoner.stats.kills
-							td= summoner.stats.deaths
-							td= summoner.stats.assists
-	
+		if matches
+			h2= summoner_name + "'s Match History"
+			div
+				table(id="matchHistory")
+					tr
+						th Match Id
+						th Match Time
+						th Champion
+						th Role
+						th Lane
+						th Queue
+						th Season
+					for match in matches
+							tr
+								td
+									a(href="/getmatch?matchId=" + match.matchId)= match.matchId
+								td= match.timestamp
+								td= match.champion
+								td= match.role
+								td= match.lane
+								td= match.queue
+								td= match.season
+								
+		if match_found
+			h2= ('Match ' + match_id)
+			
+			for team in match.teams
+				if team.winner == true
+					if team.color == 'blue'
+						h4(style='color:blue') BLUE TEAM VICTORY
+					else
+						h4(style='color:red') RED TEAM VICTORY
+			
+			div
+				table
+					tr(id="blueTeamHeader")
+						th Summoner
+						th Champion
+						th Level
+						th K/D/A
+						th CS
+						th Gold Earned
+					for participant in match.participants
+						if participant.teamColor == 'blue'
+							tr
+								td= participant.summonerName
+								td= participant.champion
+								td= participant.stats.champLevel
+								td= participant.stats.kills + '/' + participant.stats.deaths + '/' + participant.stats.assists
+								td= participant.stats.minionsKilled
+								td= participant.stats.goldEarned
+					tr(id="redTeamHeader")
+						th Summoner
+						th Champion
+						th Level
+						th K/D/A
+						th CS
+						th Gold Earned
+					for participant in match.participants
+						if participant.teamColor == 'red'
+							tr
+								td= participant.summonerName
+								td= participant.champion
+								td= participant.stats.champLevel
+								td= participant.stats.kills + '/' + participant.stats.deaths + '/' + participant.stats.assists
+								td= participant.stats.minionsKilled
+								td= participant.stats.goldEarned
