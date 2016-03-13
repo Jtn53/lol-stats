@@ -14,17 +14,13 @@ $ npm install
 
 ### Running
 
-`http://localhost:3000`
+Open `http://localhost:3000` in your browser.
 
-### Missing key.js
-
-A file `key.js` has been purposely ignored, which contains a personal developer 
-key. To run yourself, create said file in `server/api`, containing the following
-code:
+Create a file named "api_key.js" in the root directory that contains:
 
 ````
-var key = <Steam API Key Here>;
+var api_key = '<Your personal LoL api key>'
 
-module.exports = key;
+module.exports = api_key;
 ````
-An API key can be found here: http://steamcommunity.com/dev/apikey
+

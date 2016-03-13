@@ -3,12 +3,6 @@ var router = express.Router();
 var request = require('request');
 var logic = require('../models/logic.js');
 
-var api_url = 'https://na.api.pvp.net/api/lol/na';
-var api_key = 'cd2ecdbe-43d2-4ead-98ee-071630568046';
-var api_summoner_url = '/v1.4/summoner/by-name/';
-var api_matchlist_url = '/v2.2/matchlist/by-summoner/';
-var api_match_url = '/v2.2/match/';
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index');

@@ -16,6 +16,15 @@ module.exports = {
 		var getSummonerIdResponse;
 		var summonerId;
 		
+		// Change name to lower case and remove spaces
+		summonerName = summonerName.toLowerCase();
+		summonerName = summonerName.replace(/\s+/g, '');
+		
+		// Return message if search is blank
+		if (!summonerName){
+			cb("Please enter a summoner's name");
+		}
+		
 		request({
 			url: api_url + api_summoner_url + summonerName,
 			method: 'GET',
@@ -23,6 +32,8 @@ module.exports = {
 		}, function processSummonerCallResponse(error, response, body){
 			if (!error && response.statusCode == 200) 
 			{ 
+				console.log("Search result: " + body);
+				console.log("Searched summoner name: " + summonerName);
 				getSummonerIdResponse = JSON.parse(body);
 				summonerId = getSummonerIdResponse[summonerName].id;
 				
@@ -70,7 +81,6 @@ module.exports = {
 						match.timestamp = new Date(match.timestamp);
 						
 						// query db to match champion with championId
-						console.log("Going into getChampionNameFromId");
 						champions.getChampionNameFromId(match.champion, function(championName){
 							// replace the match's champion Id with a displayable champion Name
 							match.champion = championName;
