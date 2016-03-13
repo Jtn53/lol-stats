@@ -13,7 +13,6 @@ router.get('/searchsummoner*', function(req, res) {
 	
 	// Get the summoner's ID from the provided summoner name
 	logic.getSummonerIdBySummonerName(req.query.summonername, function(error, summonerId){
-		console.log("Error: " + error + " and summoner Id: " + summonerId);
 		if (error)
 		{
 			res.render('index', { error_message : error });

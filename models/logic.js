@@ -32,13 +32,11 @@ module.exports = {
 		}, function processSummonerCallResponse(error, response, body){
 			if (!error && response.statusCode == 200) 
 			{ 
-				console.log("Search result: " + body);
-				console.log("Searched summoner name: " + summonerName);
 				getSummonerIdResponse = JSON.parse(body);
 				summonerId = getSummonerIdResponse[summonerName].id;
 				
 				// return the summoner ID
-				console.log("Searched for: " + summonerName + " with summoner id: " + summonerId);
+				console.log("Found summoner information for: " + summonerName + " with summoner id: " + summonerId);
 				cb(null, summonerId);
 			}
 			else if (response.statusCode == 404)
@@ -65,7 +63,7 @@ module.exports = {
 			if (!error && response.statusCode == 200) 
 			{ 
 				getMatchesResponse = JSON.parse(body);
-				console.log("Found match history...");
+				console.log("Found match history");
 				
 				// Grab all the matches and convert the timestamp to Date and championIds to champion names
 				if (getMatchesResponse['totalGames'] != 0)
