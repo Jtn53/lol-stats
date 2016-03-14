@@ -20,9 +20,15 @@ module.exports = {
 		summonerName = summonerName.toLowerCase();
 		summonerName = summonerName.replace(/\s+/g, '');
 		
-		// Return message if search is blank
-		if (!summonerName){
-			cb("Please enter a summoner's name");
+		// Return error message if search is blank
+		if (!summonerName)
+		{
+			return cb("Please enter a summoner's name");
+		}
+		// Return error message if name is not alphanumeric
+		else if (!(/^[0-9a-zA-Z]+$/).test(summonerName))
+		{
+			return cb("Summoner names may only contain numbers and letters");
 		}
 		
 		request({
@@ -36,17 +42,15 @@ module.exports = {
 				summonerId = getSummonerIdResponse[summonerName].id;
 				
 				// return the summoner ID
-				console.log("Found summoner information for: " + summonerName + " with summoner id: " + summonerId);
-				cb(null, summonerId);
+				return cb(null, summonerId);
 			}
 			else if (response.statusCode == 404)
 			{
-				cb("Summoner " + summonerName+ " not found");
+				return cb("Summoner " + summonerName+ " not found");
 			}
 			else
 			{
-				console.log("Error message: " + error);
-				cb("Sorry! We are encountering technical difficulties. Please try again later!");
+				return cb("Sorry! We are encountering technical difficulties. Please try again later!");
 			}
 		});
 	},
@@ -87,7 +91,7 @@ module.exports = {
 							if (matchesFound == matches.length) {
 								// Happy case scenario: return the summoner name and the whole match history
 								console.log("Finished processing all matches!");
-								cb(null, matches);
+								return cb(null, matches);
 							}
 						});
 					});
@@ -95,13 +99,13 @@ module.exports = {
 				else
 				{
 					// Match history found, but no games have been played
-					cb("No match history found");
+					return cb("No match history found");
 				}
 			}
 			else 
 			{ 
 				// Match history not found
-				cb("No match history found");
+				return cb("No match history found");
 			}
 		});
 	},
@@ -121,12 +125,11 @@ module.exports = {
 				getMatchResponse = JSON.parse(body);
 				
 				filterMatchDetails(getMatchResponse, function(match){
-					cb(match);
+					return cb(match);
 				});
 			}
 			else 
 			{ 
-				console.log(error);
 				res.render('index', { error_message : "Could not find match details" });
 			}
 		});
@@ -134,9 +137,11 @@ module.exports = {
 };
 
 /**
-	filterMatchDetails() takes a match and returns two arrays: redTeamPlayers and blueTeamPlayers.
-	Each array is filled with 'participants'.
-	Each participant has 
+	filterMatchDetails() takes a match and does the following to it:
+	- add a new field to match.participants called summonerName that has the participant's name
+	- add a new field 
+	
+	It returns a match details object.
 	**/
 filterMatchDetails = function(match, cb){
 	// Participants has all the info we need except the participant's name (need to join with participantIdentities)

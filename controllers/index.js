@@ -15,6 +15,7 @@ router.get('/searchsummoner*', function(req, res) {
 	logic.getSummonerIdBySummonerName(req.query.summonername, function(error, summonerId){
 		if (error)
 		{
+			console.log("Searching for " + req.query.summonername + " resulted in error: " + error);
 			res.render('index', { error_message : error });
 		}
 		else
@@ -23,12 +24,12 @@ router.get('/searchsummoner*', function(req, res) {
 			logic.getMatchHistoryBySummonerId(summonerId, function(error, matches) {
 				if (error)
 				{
+					console.log("Getting match history for " + req.query.summonername + " resulted in error: " + error);
 					res.render('index', { error_message : error });
 				}
 				else
 				{
 					// Happy case scenario: return the summoner name and the match list
-					console.log("Finished grabbing match history! Returning to index...");
 					res.render('index', { 
 						summoner_name : req.query.summonername,
 						matches : matches
