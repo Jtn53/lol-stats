@@ -2,11 +2,11 @@ extends layout
 
 block content
 	div(id="search")
-		h1 Justin's LoL Stats App
+		h1 Justin's LoL Match Stalker
 		p Search for a summoner name: 
 		form#formSearchSummoner(name="searchsummoner",method="get",action="/searchsummoner")
 			input#inputSummonerName(type="text", name="summonername")
-			button#btnSubmit(type="submit") Search
+			button#btnSubmit(type="submit") Stalk
 	
 	div(id="content")
 		if error_message
